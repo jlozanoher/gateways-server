@@ -1,38 +1,12 @@
 import express, { Request, Response } from "express";
-import {
-  createGatewayHandler,
-  deleteGatewayHandler,
-  getGatewayHandler,
-  getGatewaysHandler,
-  updateGatewayHandler,
-} from "./controller/gateway.controller";
-import {
-  createPeripheralHandler,
-  deletePeripheralHandler,
-  getPeripheralHandler,
-  updatePeripheralHandler,
-} from "./controller/peripheral.controller";
-import {
-  createUserSessionHandler,
-  getUserSessionsHandler,
-  invalidateUserSessionHandler,
-} from "./controller/session.controller";
+import * as GatewayController from "./controller/gateway.controller";
+import * as PeripheralController from "./controller/peripheral.controller";
+import * as SessionController from "./controller/session.controller";
 import { createUserHandler } from "./controller/user.controller";
 import { requiresUser, validateRequest } from "./middleware";
-import {
-  createGatewaySchema,
-  deleteGatewaySchema,
-  updateGatewaySchema,
-} from "./schema/gateway.schema";
-import {
-  createPeripheralSchema,
-  deletePeripheralSchema,
-  updatePeripheralSchema,
-} from "./schema/peripheral.schema";
-import {
-  createUserSchema,
-  createUserSessionSchema,
-} from "./schema/user.schema";
+import * as GatewaySchema from "./schema/gateway.schema";
+import * as PeripheralSchema from "./schema/peripheral.schema";
+import * as UserSchema from "./schema/user.schema";
 
 var routes = express.Router();
 
@@ -41,70 +15,83 @@ routes.get("/healthcheck", (req: Request, res: Response) => {
 });
 
 // Register user
-routes.post("/api/users", validateRequest(createUserSchema), createUserHandler);
+routes.post(
+  "/api/users",
+  validateRequest(UserSchema.createUserSchema),
+  createUserHandler
+);
 
 // Login
 routes.post(
   "/api/sessions",
-  validateRequest(createUserSessionSchema),
-  createUserSessionHandler
+  validateRequest(UserSchema.createUserSessionSchema),
+  SessionController.createUserSessionHandler
 );
 
 // Get the user's sessions
-routes.get("/api/sessions", requiresUser, getUserSessionsHandler);
+routes.get(
+  "/api/sessions",
+  requiresUser,
+  SessionController.getUserSessionsHandler
+);
 
 // Logout
-routes.delete("/api/sessions", requiresUser, invalidateUserSessionHandler);
+routes.delete(
+  "/api/sessions",
+  requiresUser,
+  SessionController.invalidateUserSessionHandler
+);
 
 // Gateway ------------------------------------------------------------------------
 // Create
 routes.post(
   "/api/gateways",
-  [validateRequest(createGatewaySchema)],
-  createGatewayHandler
+  [validateRequest(GatewaySchema.createGatewaySchema)],
+  GatewayController.createGatewayHandler
 );
 
 // Get
-routes.get("/api/gateways/:_id", getGatewayHandler);
-routes.get("/api/gateways", getGatewaysHandler);
+routes.get("/api/gateways/:_id", GatewayController.getGatewayHandler);
+routes.get("/api/gateways", GatewayController.getGatewaysHandler);
 
 // Update
 routes.put(
   "/api/gateways/:_id",
-  [validateRequest(updateGatewaySchema)],
-  updateGatewayHandler
+  [validateRequest(GatewaySchema.updateGatewaySchema)],
+  GatewayController.updateGatewayHandler
 );
 
 // Delete
 routes.delete(
   "/api/gateways/:_id",
-  [validateRequest(deleteGatewaySchema)],
-  deleteGatewayHandler
+  [validateRequest(GatewaySchema.deleteGatewaySchema)],
+  GatewayController.deleteGatewayHandler
 );
 
 // Peripheral ------------------------------------------------------------------------
 // Create
 routes.post(
   "/api/peripherals",
-  [validateRequest(createPeripheralSchema)],
-  createPeripheralHandler
+  [validateRequest(PeripheralSchema.createPeripheralSchema)],
+  PeripheralController.createPeripheralHandler
 );
 
 // Get
-routes.get("/api/peripherals/:_id", getPeripheralHandler);
+routes.get("/api/peripherals/:_id", PeripheralController.getPeripheralHandler);
+routes.get("/api/peripherals", PeripheralController.getPeripheralsHandler);
 
 // Update
 routes.put(
   "/api/peripherals/:_id",
-  [validateRequest(updatePeripheralSchema)],
-  updatePeripheralHandler
+  [validateRequest(PeripheralSchema.updatePeripheralSchema)],
+  PeripheralController.updatePeripheralHandler
 );
 
 // Delete
 routes.delete(
   "/api/peripherals/:_id",
-  [validateRequest(deletePeripheralSchema)],
-  deletePeripheralHandler
+  [validateRequest(PeripheralSchema.deletePeripheralSchema)],
+  PeripheralController.deletePeripheralHandler
 );
 
 export default routes;

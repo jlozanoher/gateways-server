@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
-import { APIError, DBError } from "../errors";
-import { GatewayDocument } from "../model/gateway.model";
+import { DBError } from "../errors";
 import { findOneGateway } from "../service/gateway.service";
 import {
   createPeripheral,
   deletePeripheral,
   findAndUpdatePeripheral,
   findOnePeripheral,
+  findPeripheral,
 } from "../service/peripheral.service";
 
 async function validateGateway(req: Request, res: Response) {
@@ -24,28 +24,38 @@ async function validateGateway(req: Request, res: Response) {
   return null;
 }
 
-export async function createPeripheralHandler(req: Request, res: Response) {
-  const body = req.body;
+export async function createPeripheralHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const body = req.body;
 
-  let data = { ...body };
+    let data = { ...body };
 
-  const gateway = await validateGateway(req, res);
+    if (get(body, "gateway")) {
+      const gateway = await validateGateway(req, res);
 
-  if (gateway) {
-    data = { ...body, gateway };
-  } else {
-    return res.status(404).send("body.gateway: not found");
+      if (gateway) {
+        data = { ...body, gateway };
+      } else {
+        return res.status(404).send("body.gateway: not found");
+      }
+    }
+
+    const peripheral = await createPeripheral(data);
+
+    return res.send(peripheral);
+  } catch (err: any) {
+    next(new DBError(err));
   }
-
-  const peripheral = await createPeripheral(data);
-
-  return res.send(peripheral);
 }
 
 export async function updatePeripheralHandler(
   req: Request,
   res: Response,
-  next: any
+  next: NextFunction
 ) {
   try {
     const _id = get(req, "params._id");
@@ -57,12 +67,17 @@ export async function updatePeripheralHandler(
       return res.sendStatus(404);
     }
 
-    const gateway = await validateGateway(req, res);
+    const aux = get(update, "gateway");
+    if (aux === "detach") {
+      update = { ...update, gateway: null };
+    } else if (aux) {
+      const gateway = await validateGateway(req, res);
 
-    if (gateway) {
-      update = { ...update, gateway };
-    } else {
-      return res.status(404).send("body.gateway: not found");
+      if (gateway) {
+        update = { ...update, gateway };
+      } else {
+        return res.status(404).send("body.gateway: not found");
+      }
     }
 
     const updatedPeripheral = await findAndUpdatePeripheral({ _id }, update, {
@@ -74,6 +89,7 @@ export async function updatePeripheralHandler(
     next(new DBError(err));
   }
 }
+
 export async function getPeripheralHandler(
   req: Request,
   res: Response,
@@ -93,16 +109,38 @@ export async function getPeripheralHandler(
   }
 }
 
-export async function deletePeripheralHandler(req: Request, res: Response) {
-  const _id = get(req, "params._id");
+export async function getPeripheralsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const peripherals = await findPeripheral({});
 
-  const peripheral = await findOnePeripheral({ _id });
-
-  if (!peripheral) {
-    return res.sendStatus(404);
+    return res.send(peripherals);
+  } catch (err: any) {
+    next(new DBError(err));
   }
+}
 
-  await deletePeripheral({ _id });
+export async function deletePeripheralHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const _id = get(req, "params._id");
 
-  return res.sendStatus(200);
+    const peripheral = await findOnePeripheral({ _id });
+
+    if (!peripheral) {
+      return res.sendStatus(404);
+    }
+
+    await deletePeripheral({ _id });
+
+    return res.sendStatus(200);
+  } catch (err: any) {
+    next(new DBError(err));
+  }
 }

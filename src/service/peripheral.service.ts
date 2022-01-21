@@ -18,7 +18,7 @@ export function findPeripheral(
   query: FilterQuery<PeripheralDocument>,
   options: QueryOptions = { lean: true }
 ) {
-  return Peripheral.findOne(query, {}, options);
+  return Peripheral.find(query, {}, options).exec();
 }
 
 export function findOnePeripheral(

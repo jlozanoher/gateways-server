@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
+import mongoose from "mongoose";
 import { DBError } from "../errors";
+import Peripheral from "../model/peripheral.model";
 import {
   createGateway,
   deleteGateway,
@@ -96,7 +98,12 @@ export async function deleteGatewayHandler(
       return res.sendStatus(404);
     }
 
-    await deleteGateway({ _id });
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      await deleteGateway({ _id });
+      await Peripheral.updateMany({ gateway: _id }, { gateway: null });
+    });
+    session.endSession();
 
     return res.sendStatus(200);
   } catch (err: any) {

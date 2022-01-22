@@ -16,24 +16,21 @@ export interface PeripheralDocument extends mongoose.Document {
   vendor: string;
   status: PeripheralStatus; // online/offline.
   createdAt: Date;
-  updatedAt: Date;
   gateway: GatewayDocument["_id"];
 }
 
-const PeripheralSchema = new mongoose.Schema(
-  {
-    uid: {
-      type: Number,
-      required: true,
-      unique: true,
-      default: () => nanoid(),
-    },
-    vendor: { type: String, required: true },
-    status: { type: String, default: "offline" as PeripheralStatus },
-    gateway: { type: Schema.Types.ObjectId, ref: "Gateway" },
+const PeripheralSchema = new mongoose.Schema({
+  uid: {
+    type: Number,
+    required: true,
+    unique: true,
+    default: () => nanoid(),
   },
-  { timestamps: true }
-);
+  vendor: { type: String, required: true },
+  status: { type: String, default: "offline" as PeripheralStatus },
+  createdAt: { type: Date, default: new Date() },
+  gateway: { type: Schema.Types.ObjectId, ref: "Gateway" },
+});
 
 // @ts-ignore
 PeripheralSchema.post("findOne", function (error, doc, next) {

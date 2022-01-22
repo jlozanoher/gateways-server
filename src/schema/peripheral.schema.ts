@@ -1,8 +1,5 @@
 import { number, object, string } from "yup";
-import {
-  PeripheralStatus,
-  PeripheralStatusEnum,
-} from "../model/peripheral.model";
+import { PeripheralStatusEnum } from "../model/peripheral.model";
 
 const params = {
   params: object({
@@ -14,6 +11,7 @@ export const createPeripheralSchema = object({
   body: object({
     uid: number(),
     vendor: string().required().max(50),
+    createdAt: string(),
     status: string().test(
       "is status type",
       `body.status: valid peripheral statuses: ${Object.values(
@@ -34,6 +32,7 @@ export const updatePeripheralSchema = object({
   body: object({
     uid: number(),
     vendor: string().max(50),
+    createdAt: string(),
     status: string().test(
       "is status type",
       `body.status: valid peripheral statuses: ${Object.values(

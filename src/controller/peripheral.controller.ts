@@ -24,6 +24,13 @@ async function validateGateway(req: Request, res: Response) {
   return null;
 }
 
+async function gatewayAllowAttachingPeripheral(gatewayId: number) {
+  // Validate a gateway cannot have more than 10 peripherals
+  const peripherals = await findPeripheral({ gateway: gatewayId });
+  if (peripherals.length >= 10) return false;
+  return true;
+}
+
 export async function createPeripheralHandler(
   req: Request,
   res: Response,
@@ -34,11 +41,21 @@ export async function createPeripheralHandler(
 
     let data = { ...body };
 
-    if (get(body, "gateway")) {
+    const gatewayId = get(body, "gateway");
+    if (gatewayId) {
       const gateway = await validateGateway(req, res);
 
       if (gateway) {
-        data = { ...body, gateway };
+        const allow = await gatewayAllowAttachingPeripheral(gatewayId);
+        if (allow) {
+          data = { ...body, gateway };
+        } else {
+          return res
+            .status(400)
+            .send(
+              "body.gateway: doesn't allow more than 10 peripherals attached"
+            );
+        }
       } else {
         return res.status(404).send("body.gateway: not found");
       }
@@ -72,9 +89,17 @@ export async function updatePeripheralHandler(
       update = { ...update, gateway: null };
     } else if (aux) {
       const gateway = await validateGateway(req, res);
-
       if (gateway) {
-        update = { ...update, gateway };
+        const allow = await gatewayAllowAttachingPeripheral(aux);
+        if (allow) {
+          update = { ...update, gateway };
+        } else {
+          return res
+            .status(400)
+            .send(
+              "body.gateway: doesn't allow more than 10 peripherals attached"
+            );
+        }
       } else {
         return res.status(404).send("body.gateway: not found");
       }

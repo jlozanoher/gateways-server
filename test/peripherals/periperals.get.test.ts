@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 describe("Gateways", () => {
   beforeEach((done) => {
     //Before each test we empty the database
-    Peripheral.remove({}, (err: any) => {
+    Peripheral.deleteMany({}, (err: any) => {
       done();
     });
   });

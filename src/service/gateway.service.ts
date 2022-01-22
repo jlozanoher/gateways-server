@@ -4,7 +4,6 @@ import {
   QueryOptions,
   UpdateQuery,
 } from "mongoose";
-import { DBError } from "../errors";
 import Gateway, { GatewayDocument } from "../model/gateway.model";
 
 export function createGateway(input: DocumentDefinition<GatewayDocument>) {
@@ -16,6 +15,22 @@ export function findGateway(
   options: QueryOptions = { lean: true }
 ) {
   return Gateway.find(query, {}, options).exec();
+}
+
+export function findGatewaysWithPeripherals(
+  query: FilterQuery<GatewayDocument>,
+  options: QueryOptions = { lean: true }
+) {
+  return Gateway.aggregate([
+    {
+      $lookup: {
+        from: "peripherals",
+        localField: "_id",
+        foreignField: "gateway",
+        as: "peripherals",
+      },
+    },
+  ]);
 }
 
 export function findOneGateway(

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { DBError } from "../errors";
 
 export interface GatewayDocument extends mongoose.Document {
   serialNumber: string;
@@ -15,7 +14,9 @@ const GatewaySchema = new mongoose.Schema(
     name: { type: String, required: true },
     ipv4Address: { type: String, required: true },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 const Gateway = mongoose.model<GatewayDocument>("Gateway", GatewaySchema);

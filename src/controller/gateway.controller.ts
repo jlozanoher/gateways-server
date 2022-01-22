@@ -9,6 +9,7 @@ import {
   findAndUpdateGateway,
   findOneGateway,
   findGateway,
+  findGatewaysWithPeripherals,
 } from "../service/gateway.service";
 
 export async function createGatewayHandler(
@@ -51,6 +52,7 @@ export async function updateGatewayHandler(
     next(new DBError(err));
   }
 }
+
 export async function getGatewayHandler(
   req: Request,
   res: Response,
@@ -70,6 +72,7 @@ export async function getGatewayHandler(
     next(new DBError(err));
   }
 }
+
 export async function getGatewaysHandler(
   req: Request,
   res: Response,
@@ -77,6 +80,20 @@ export async function getGatewaysHandler(
 ) {
   try {
     const gateways = await findGateway({});
+
+    return res.send(gateways);
+  } catch (err: any) {
+    next(new DBError(err));
+  }
+}
+
+export async function getGatewaysWithPeripheralsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const gateways = await findGatewaysWithPeripherals({});
 
     return res.send(gateways);
   } catch (err: any) {

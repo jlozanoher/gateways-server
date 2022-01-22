@@ -67,7 +67,7 @@ describe("/POST peripheral", () => {
       });
     });
 
-    it.only("it should not POST a peripheral attached to a gateway with 10 pheripherals already attached", async () => {
+    it("it should not POST a peripheral attached to a gateway with 10 pheripherals already attached", async () => {
       let gateway = await Gateway.findOne({}).lean();
       let peripheral = {
         uid: 1234,

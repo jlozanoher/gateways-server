@@ -53,6 +53,10 @@ routes.post(
 // Get
 routes.get("/api/gateways/:_id", GatewayController.getGatewayHandler);
 routes.get("/api/gateways", GatewayController.getGatewaysHandler);
+routes.get(
+  "/api/gatewaysWithPeripherals",
+  GatewayController.getGatewaysWithPeripheralsHandler
+);
 
 // Update
 routes.put(

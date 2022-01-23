@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/app.ts",
+    "start": "ts-node src/app.ts",
     "test": "ts-mocha 'test/**/*.ts' --recursive --timeout 60000 --exit"
   },
   "dependencies": {

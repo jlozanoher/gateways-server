@@ -6,11 +6,9 @@ In this readme we use yarn as the package manager but feel free to use npm.
 
 - Install Node.js (https://github.com/nodesource/distributions/blob/master/README.md#debinstall)
 - Install MongoDB (https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
-- Install nodemon (https://www.digitalocean.com/community/tutorials/workflow-nodemon)
 - Clone the repository or unzip the gateways-server
 - cd gateways-server
 - yarn install
-- yarn global add nodemon
 - Run all tests
 
   yarn test

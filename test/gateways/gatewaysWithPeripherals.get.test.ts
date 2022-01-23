@@ -39,7 +39,7 @@ describe("Gateways with peripherals", () => {
   });
 
   describe("/GET gateway with peripherals", () => {
-    it("it should GET 0 gateways", (done) => {
+    it("it should GET one gateway", (done) => {
       chai
         .request(app)
         .get("/api/gatewaysWithPeripherals")

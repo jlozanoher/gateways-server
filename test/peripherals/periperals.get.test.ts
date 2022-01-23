@@ -7,7 +7,7 @@ import Peripheral from "../../src/model/peripheral.model";
 
 chai.use(chaiHttp);
 
-describe("Gateways", () => {
+describe("Peripherals", () => {
   beforeEach((done) => {
     //Before each test we empty the database
     Peripheral.deleteMany({}, (err: any) => {

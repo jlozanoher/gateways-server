@@ -15,7 +15,7 @@ In this readme we use yarn as the package manager but feel free to use npm.
 
 - Run the development server
 
-  yarn dev
+  yarn start
 
 ## Technologies
 

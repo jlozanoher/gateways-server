@@ -7,6 +7,7 @@ import { requiresUser, validateRequest } from "./middleware";
 import * as GatewaySchema from "./schema/gateway.schema";
 import * as PeripheralSchema from "./schema/peripheral.schema";
 import * as UserSchema from "./schema/user.schema";
+import { populateDatabase, shouldPopulate } from "./seeds/db.populate";
 
 var routes = express.Router();
 
@@ -41,6 +42,10 @@ routes.delete(
   requiresUser,
   SessionController.invalidateUserSessionHandler
 );
+
+// Populate db
+routes.post("/api/populate", populateDatabase);
+routes.get("/api/shouldPopulate", shouldPopulate);
 
 // Gateway ------------------------------------------------------------------------
 // Create
